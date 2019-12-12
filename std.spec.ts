@@ -98,15 +98,6 @@ describe('std', () => {
             assert.equal(rb.size, 3);
         });
 
-        it('Можно доставать элементы', () => {
-            assert.equal(rb.size, 3);
-
-            assert.equal(rb.shift(), 2);
-            assert.equal(rb.shift(), 3);
-
-            assert.equal(rb.size, 1);
-        });
-
         it('Можно конкатинировать два буффера', () => {
             newRb.push(24);
             newRb.push(35);
@@ -114,8 +105,19 @@ describe('std', () => {
             newRb.push(12);
 
             const newBuffer = std.RingBuffer.concat(rb, newRb);
-            assert.equal(newBuffer.size, 5);
+            assert.equal(newBuffer.size, 7);
             assert.equal(newBuffer.capacity, 7);
+            assert.equal(newBuffer.get(0), 2);
+            assert.equal(newBuffer.get(6), 12);
+        });
+
+        it('Можно доставать элементы', () => {
+            assert.equal(rb.size, 3);
+
+            assert.equal(rb.shift(), 2);
+            assert.equal(rb.shift(), 3);
+
+            assert.equal(rb.size, 1);
         });
     });
 
