@@ -206,9 +206,7 @@ export class RingBuffer<T> extends List<T> {
     }
 
     private extend(buffer: RingBuffer<T>): void {
-        this._capacity += buffer.capacity;
-        const bufferSize = buffer.size;
-        for (let i = 0; i < bufferSize; i++) {
+        for (let i = 0; i < buffer.size; i++) {
             const node = buffer.get(i);
             if (node) {
                 this.push(node);
@@ -218,8 +216,12 @@ export class RingBuffer<T> extends List<T> {
         return;
     }
 
-    public static concat<U>(...buffers: RingBuffer<U>[]): RingBuffer<U> {
-        const newBuffer = new RingBuffer<U>(0);
+    public static concat<U>(...buffers: Array<RingBuffer<U>>): RingBuffer<U> {
+        let newCapacity = 0;
+        for (const buffer of buffers) {
+            newCapacity += buffer._capacity;
+        }
+        const newBuffer = new RingBuffer<U>(newCapacity);
         for (const buffer of buffers) {
             newBuffer.extend(buffer);
         }
