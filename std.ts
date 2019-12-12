@@ -32,7 +32,7 @@ class List<T> {
     protected head?: Node<T>;
     protected tail?: Node<T>;
     protected _size: number;
-    get size(): number {
+    public get size(): number {
         return this._size;
     }
 
@@ -119,7 +119,7 @@ export class LinkedList<T> extends List<T> {
 export class RingBuffer<T> extends List<T> {
     private _capacity: number;
 
-    get capacity(): number {
+    public get capacity(): number {
         return this._capacity;
     }
 
@@ -137,6 +137,9 @@ export class RingBuffer<T> extends List<T> {
 
     private extend(buffer: RingBuffer<T>): void {
         this._capacity += buffer.capacity;
+        while (this._size > this._capacity) {
+            super.shift();
+        }
         const bufferSize = buffer.size;
         for (let i = 0; i < bufferSize; i++) {
             const node = buffer.get(i);
@@ -237,7 +240,7 @@ export class PriorityQueue<T> {
     }
 
     public enqueue(element: T, priority: number): void {
-        if (priority > 3 || priority < 1) {
+        if (!(priority in Priority)) {
             return;
         }
         const newItem = new PriorityNode<T>(element, priority);

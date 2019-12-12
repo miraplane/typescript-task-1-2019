@@ -98,19 +98,6 @@ describe('std', () => {
             assert.equal(rb.size, 3);
         });
 
-        it('Можно конкатинировать два буффера', () => {
-            newRb.push(24);
-            newRb.push(35);
-            newRb.push(45);
-            newRb.push(12);
-
-            const newBuffer = std.RingBuffer.concat(rb, newRb);
-            assert.equal(newBuffer.size, 7);
-            assert.equal(newBuffer.capacity, 7);
-            assert.equal(newBuffer.get(0), 2);
-            assert.equal(newBuffer.get(6), 12);
-        });
-
         it('Можно доставать элементы', () => {
             assert.equal(rb.size, 3);
 
@@ -118,6 +105,21 @@ describe('std', () => {
             assert.equal(rb.shift(), 3);
 
             assert.equal(rb.size, 1);
+        });
+
+        it('Можно конкатинировать два буффера', () => {
+            newRb.push(12);
+            newRb.push(23);
+            newRb.push(34);
+            newRb.push(45);
+
+            const newBuffer = std.RingBuffer.concat(rb, newRb, new (std.RingBuffer as any)(-5));
+            assert.equal(newBuffer.capacity, 2);
+            assert.equal(newBuffer.size, 2);
+            assert.equal(newBuffer.get(0), 34);
+
+            assert.equal(rb.size, 1);
+            assert.equal(newRb.size, 4);
         });
     });
 
@@ -223,6 +225,12 @@ describe('std', () => {
             ht.clear();
 
             assert.equal(ht.size, 0);
+        });
+
+        it('и снова складывать', () => {
+            ht.put(6, 16);
+            assert.equal(ht.size, 1);
+            assert.equal(ht.get(object), undefined);
         });
     });
 });
