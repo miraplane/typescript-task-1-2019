@@ -137,7 +137,8 @@ export class RingBuffer<T> extends List<T> {
 
     private extend(buffer: RingBuffer<T>): void {
         this._capacity += buffer.capacity;
-        for (let i = 0; i < buffer.size; i++) {
+        const bufferSize = buffer.size;
+        for (let i = 0; i < bufferSize; i++) {
             const node = buffer.shift();
             if (node) {
                 this.push(node);

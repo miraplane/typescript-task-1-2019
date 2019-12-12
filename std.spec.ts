@@ -69,6 +69,7 @@ describe('std', () => {
 
     describe('RingBuffer', () => {
         const rb = new (std.RingBuffer as any)(3);
+        const newRb = new (std.RingBuffer as any)(4);
 
         it('Можно добавлять элементы', () => {
             assert.equal(rb.size, 0);
@@ -93,6 +94,7 @@ describe('std', () => {
 
             rb.push(4);
 
+            assert.equal(rb.get(0), 2);
             assert.equal(rb.size, 3);
         });
 
@@ -103,6 +105,17 @@ describe('std', () => {
             assert.equal(rb.shift(), 3);
 
             assert.equal(rb.size, 1);
+        });
+
+        it('Можно конкатинировать два буффера', () => {
+            newRb.push(24);
+            newRb.push(35);
+            newRb.push(45);
+            newRb.push(12);
+
+            const newBuffer = std.RingBuffer.concat(rb, newRb);
+            assert.equal(newBuffer.size, 5);
+            assert.equal(newBuffer.capacity, 7);
         });
     });
 
@@ -211,3 +224,4 @@ describe('std', () => {
         });
     });
 });
+
