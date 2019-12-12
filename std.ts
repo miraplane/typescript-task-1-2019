@@ -296,8 +296,8 @@ export class PriorityQueue<T> {
     }
 }
 
-export class HashTable<K, V> {
-    private data: Array<[K, V]>;
+export class HashTable {
+    private data: Array<[any, any]>;
 
     public get size(): number {
         return this.data.length;
@@ -307,7 +307,7 @@ export class HashTable<K, V> {
         this.data = [];
     }
 
-    public put(key: K, element: V): void {
+    public put(key: any, element: any): void {
         for (let i = 0; i < this.data.length; i++) {
             if (this.data[i][0] === key) {
                 this.data[i][1] = element;
@@ -322,7 +322,7 @@ export class HashTable<K, V> {
         this.data = [];
     }
 
-    public get(key: K): V | undefined {
+    public get(key: any): any | undefined {
         for (let i = 0; i < this.data.length; i++) {
             if (this.data[i][0] === key) {
                 return this.data[i][1];
