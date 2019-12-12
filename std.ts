@@ -219,7 +219,7 @@ export class RingBuffer<T> extends List<T> {
     public static concat<U>(...buffers: Array<RingBuffer<U>>): RingBuffer<U> {
         let newCapacity = 0;
         for (const buffer of buffers) {
-            newCapacity += buffer._capacity;
+            newCapacity += buffer.capacity;
         }
         const newBuffer = new RingBuffer<U>(newCapacity);
         for (const buffer of buffers) {
