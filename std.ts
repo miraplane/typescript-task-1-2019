@@ -41,10 +41,10 @@ class List<T> {
     }
     protected shift(): T | undefined {
         const head = this.head;
-        const next = head ? head.next : undefined;
         if (!head) {
             return;
         }
+        const next = head.next;
         if (next) {
             next.prev = undefined;
             this.head = next;
@@ -72,10 +72,10 @@ class List<T> {
 
     protected pop(): T | undefined {
         const tail = this.tail;
-        const prev = tail ? tail.prev : undefined;
         if (!tail) {
             return;
         }
+        const prev = tail.prev;
         if (prev) {
             prev.next = undefined;
             this.tail = prev;
@@ -257,17 +257,17 @@ export class PriorityQueue<T> {
     private first: Queue<T>;
     private second: Queue<T>;
     private third: Queue<T>;
-    private _size: number;
 
     public get size(): number {
-        return this._size;
+        return this.first.size +
+            this.second.size +
+            this.third.size;
     }
 
     constructor() {
         this.first = new Queue<T>();
         this.second = new Queue<T>();
         this.third = new Queue<T>();
-        this._size = 0;
     }
 
     public enqueue(element: T, priority: Priority): void {
@@ -281,62 +281,51 @@ export class PriorityQueue<T> {
         } else {
             this.third.enqueue(element);
         }
-        this._size += 1;
     }
 
     public dequeue(): T | undefined {
-        this._size -= 1;
-        if (this.third.size !== 0) {
+        if (this.third.size > 0) {
             return this.third.dequeue();
-        } else if (this.second.size !== 0) {
+        } else if (this.second.size > 0) {
             return this.second.dequeue();
-        } else if (this.first.size !== 0) {
+        } else if (this.first.size > 0) {
             return this.first.dequeue();
         }
-        this._size += 1;
 
         return;
     }
 }
 
 export class HashTable<K, V> {
-    private key: Array<K>;
-    private value: Array<V>;
-    private _size: number;
+    private data: Array<[K, V]>;
 
-    get size(): number {
-        return this._size;
+    public get size(): number {
+        return this.data.length;
     }
 
     constructor() {
-        this.key = [];
-        this.value = [];
-        this._size = 0;
+        this.data = [];
     }
 
     public put(key: K, element: V): void {
-        for (let i = 0; i < this.key.length; i++) {
-            if (this.key[i] === key) {
-                this.value[i] = element;
+        for (let i = 0; i < this.data.length; i++) {
+            if (this.data[i][0] === key) {
+                this.data[i][1] = element;
 
                 return;
             }
         }
-        this.key.push(key);
-        this.value.push(element);
-        this._size += 1;
+        this.data.push([key, element]);
     }
 
     public clear(): void {
-        this.key = [];
-        this.value = [];
-        this._size = 0;
+        this.data = [];
     }
 
     public get(key: K): V | undefined {
-        for (let i = 0; i < this.key.length; i++) {
-            if (this.key[i] === key) {
-                return this.value[i];
+        for (let i = 0; i < this.data.length; i++) {
+            if (this.data[i][0] === key) {
+                return this.data[i][1];
             }
         }
 
