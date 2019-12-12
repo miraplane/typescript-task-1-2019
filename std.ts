@@ -179,7 +179,7 @@ export class LinkedList<T> extends List<T> {
 
 
 export class RingBuffer<T> extends List<T> {
-    private _capacity: number;
+    private readonly _capacity: number;
 
     public get capacity(): number {
         return this._capacity;

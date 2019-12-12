@@ -107,6 +107,13 @@ describe('std', () => {
             assert.equal(rb.size, 1);
         });
 
+        it('capacity <= 0', () => {
+            const newb = new (std.RingBuffer as any)(0);
+
+            newb.push(1);
+            assert.equal(newb.size, 0);
+        });
+
         it('Можно конкатинировать два буффера', () => {
             newRb.push(12);
             newRb.push(23);
