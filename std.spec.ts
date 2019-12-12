@@ -113,13 +113,10 @@ describe('std', () => {
             newRb.push(34);
             newRb.push(45);
 
-            const newBuffer = std.RingBuffer.concat(rb, newRb, new (std.RingBuffer as any)(-5));
-            assert.equal(newBuffer.capacity, 2);
-            assert.equal(newBuffer.size, 2);
-            assert.equal(newBuffer.get(0), 34);
-
-            assert.equal(rb.size, 1);
-            assert.equal(newRb.size, 4);
+            const newBuffer = std.RingBuffer.concat<number>(rb, newRb);
+            assert.equal(newBuffer.size, 5);
+            assert.equal(newBuffer.capacity, 7);
+            assert.equal(newBuffer.get(0), 4);
         });
     });
 

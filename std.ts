@@ -137,7 +137,7 @@ export class RingBuffer<T> extends List<T> {
 
     private extend(buffer: RingBuffer<T>): void {
         this._capacity += buffer.capacity;
-        while (this._size > this._capacity) {
+        while (this._size > this._capacity && this._size !== 0) {
             super.shift();
         }
         const bufferSize = buffer.size;
