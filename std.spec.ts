@@ -189,6 +189,26 @@ describe('std', () => {
             assert.equal(pq.dequeue(), undefined);
         });
 
+        it('лементы удаляются правильно', () => {
+            pq.enqueue('8', 2);
+            pq.enqueue('4', 3);
+            pq.enqueue('6', 2);
+            pq.enqueue('7', 3);
+
+            assert.equal(pq.dequeue(), '4');
+            assert.equal(pq.dequeue(), '7');
+            assert.equal(pq.dequeue(), '8');
+            assert.equal(pq.dequeue(), '6');
+        });
+
+        it('Один элемент', () => {
+            pq.enqueue('1', 1);
+            pq.enqueue('2', 2);
+            pq.enqueue('3', 3);
+            assert.equal(pq.dequeue(), '3');
+            assert.equal(pq.dequeue(), '2');
+        });
+
     });
 
     describe('HashTable', () => {

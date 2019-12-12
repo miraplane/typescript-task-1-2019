@@ -41,7 +41,7 @@ class List<T> {
         this._size = 0;
     }
 
-    public push(element: T): void {
+    protected push(element: T): void {
         const newItem = new Node<T>(element);
         if (this.tail) {
             this.tail.next = newItem;
@@ -52,7 +52,7 @@ class List<T> {
         }
         this._size += 1;
     }
-    public shift(): T | undefined {
+    protected shift(): T | undefined {
         const head = this.head;
         const next = head ? head.next : undefined;
         if (!head) {
@@ -69,7 +69,7 @@ class List<T> {
         return head.value;
     }
 
-    public get(index: number): T | undefined {
+    protected get(index: number): T | undefined {
         if (index < 0 || index >= this._size) {
             return;
         }
@@ -82,10 +82,8 @@ class List<T> {
 
         return currentNode ? currentNode.value : undefined;
     }
-}
 
-export class LinkedList<T> extends List<T> {
-    public pop(): T | undefined {
+    protected pop(): T | undefined {
         const tail = this.tail;
         const prev = tail ? tail.prev : undefined;
         if (!tail) {
@@ -102,7 +100,7 @@ export class LinkedList<T> extends List<T> {
         return tail.value;
     }
 
-    public unshift(element: T): void {
+    protected unshift(element: T): void {
         const newItem = new Node<T>(element);
         if (this.head) {
             this.head.prev = newItem;
@@ -112,6 +110,32 @@ export class LinkedList<T> extends List<T> {
             this.head = this.tail = newItem;
         }
         this._size += 1;
+    }
+}
+
+export class LinkedList<T> extends List<T> {
+    constructor() {
+        super();
+    }
+
+    public push(element: T): void {
+        super.push(element);
+    }
+
+    public pop(): T | undefined {
+        return super.pop();
+    }
+
+    public unshift(element: T): void {
+        super.unshift(element);
+    }
+
+    public shift(): T | undefined {
+        return super.shift();
+    }
+
+    public get(index: number): T | undefined {
+        return super.get(index);
     }
 }
 
@@ -128,6 +152,10 @@ export class RingBuffer<T> extends List<T> {
         this._capacity = capacity;
     }
 
+    public get(index: number): T | undefined {
+        return super.get(index);
+    }
+
     public push(element: T): void {
         super.push(element);
         if (this.size > this._capacity) {
@@ -135,11 +163,12 @@ export class RingBuffer<T> extends List<T> {
         }
     }
 
+    public shift(): T | undefined {
+        return super.shift();
+    }
+
     private extend(buffer: RingBuffer<T>): void {
         this._capacity += buffer.capacity;
-        while (this._size > this._capacity && this._size !== 0) {
-            super.shift();
-        }
         const bufferSize = buffer.size;
         for (let i = 0; i < bufferSize; i++) {
             const node = buffer.get(i);
@@ -151,7 +180,7 @@ export class RingBuffer<T> extends List<T> {
         return;
     }
 
-    public static concat<U>(...buffers: Array<RingBuffer<U>>): RingBuffer<U> {
+    public static concat<U>(...buffers: RingBuffer<U>[]): RingBuffer<U> {
         const newBuffer = new RingBuffer<U>(0);
         for (const buffer of buffers) {
             newBuffer.extend(buffer);
@@ -161,62 +190,23 @@ export class RingBuffer<T> extends List<T> {
     }
 }
 
-export class Queue<T> {
-    private start?: Node<T>;
-    private end?: Node<T>;
-    private _size: number;
-
-    get size(): number {
-        return this._size;
-    }
-
+export class Queue<T> extends List<T> {
     constructor() {
-        this.start = this.end = undefined;
-        this._size = 0;
+        super();
     }
 
     public enqueue(element: T): void {
-        const newItem = new Node<T>(element);
-        if (this.end) {
-            this.end.prev = newItem;
-            newItem.next = this.end;
-            this.end = newItem;
-        } else {
-            this.end = this.start = newItem;
-        }
-        this._size += 1;
+        super.unshift(element);
     }
 
     public dequeue(): T | undefined {
-        const start = this.start;
-        const prev = start ? start.prev : undefined;
-        if (!start) {
-            return;
-        }
-        if (prev) {
-            prev.next = undefined;
-            this.start = prev;
-        } else {
-            this.end = this.start = undefined;
-        }
-        this._size -= 1;
-
-        return start.value;
+        return super.pop();
     }
 
     public get(index: number): T | undefined {
-        if (index < 0 || index >= this._size) {
-            return;
-        }
-        let count = 0;
-        let currentNode = this.end;
-        while (index !== count) {
-            currentNode = currentNode ? currentNode.next : undefined;
-            count += 1;
-        }
-
-        return currentNode ? currentNode.value : undefined;
+        return super.get(index);
     }
+
 }
 
 enum Priority {
@@ -296,9 +286,9 @@ export class PriorityQueue<T> {
     }
 }
 
-export class HashTable<T> {
-    private key: Array<any>;
-    private value: Array<T>;
+export class HashTable<K, V> {
+    private key: Array<K>;
+    private value: Array<V>;
     private _size: number;
 
     get size(): number {
@@ -311,7 +301,7 @@ export class HashTable<T> {
         this._size = 0;
     }
 
-    public put(key: any, element: T): void {
+    public put(key: K, element: V): void {
         for (let i = 0; i < this.key.length; i++) {
             if (this.key[i] === key) {
                 this.value[i] = element;
@@ -330,7 +320,7 @@ export class HashTable<T> {
         this._size = 0;
     }
 
-    public get(key: any): T | undefined {
+    public get(key: K): V | undefined {
         for (let i = 0; i < this.key.length; i++) {
             if (this.key[i] === key) {
                 return this.value[i];
