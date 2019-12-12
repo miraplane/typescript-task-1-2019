@@ -15,19 +15,6 @@ class Node<T> {
     }
 }
 
-class PriorityNode<T> {
-    public readonly value: T;
-    public prev?: PriorityNode<T>;
-    public next?: PriorityNode<T>;
-    public readonly priority: Priority;
-
-    constructor(value: T, priority: number) {
-        this.value = value;
-        this.priority = priority;
-        this.prev = this.next = undefined;
-    }
-}
-
 class List<T> {
     protected head?: Node<T>;
     protected tail?: Node<T>;
@@ -267,73 +254,48 @@ enum Priority {
 }
 
 export class PriorityQueue<T> {
-    private start?: PriorityNode<T>;
-    private end?: PriorityNode<T>;
+    private first: Queue<T>;
+    private second: Queue<T>;
+    private third: Queue<T>;
     private _size: number;
 
-    get size(): number {
+    public get size(): number {
         return this._size;
     }
 
     constructor() {
-        this.start = this.end = undefined;
+        this.first = new Queue<T>();
+        this.second = new Queue<T>();
+        this.third = new Queue<T>();
         this._size = 0;
     }
 
-    public enqueue(element: T, priority: number): void {
+    public enqueue(element: T, priority: Priority): void {
         if (!(priority in Priority)) {
             return;
         }
-        const newItem = new PriorityNode<T>(element, priority);
-        if (this.end) {
-            this.end.prev = newItem;
-            newItem.next = this.end;
-            this.end = newItem;
+        if (priority === Priority.First) {
+            this.first.enqueue(element);
+        } else if (priority === Priority.Second) {
+            this.second.enqueue(element);
         } else {
-            this.end = this.start = newItem;
+            this.third.enqueue(element);
         }
         this._size += 1;
     }
 
-    private getMax(): PriorityNode<T> | undefined {
-        let start = this.start;
-        if (!start) {
-            return;
-        }
-
-        let max = start.priority;
-        let maxNode = start;
-
-        while (start.prev) {
-            start = start.prev;
-            if (start.priority > max) {
-                max = start.priority;
-                maxNode = start;
-            }
-        }
-
-        return maxNode;
-    }
-
     public dequeue(): T | undefined {
-        const maxNode = this.getMax();
-        if (!maxNode) {
-            return;
-        }
-
-        if (maxNode.prev) {
-            maxNode.prev.next = maxNode.next;
-        } else {
-            this.end = maxNode.next;
-        }
-        if (maxNode.next) {
-            maxNode.next.prev = maxNode.prev;
-        } else {
-            this.start = maxNode.prev;
-        }
         this._size -= 1;
+        if (this.third.size !== 0) {
+            return this.third.dequeue();
+        } else if (this.second.size !== 0) {
+            return this.second.dequeue();
+        } else if (this.first.size !== 0) {
+            return this.first.dequeue();
+        }
+        this._size += 1;
 
-        return maxNode.value;
+        return;
     }
 }
 
