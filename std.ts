@@ -236,6 +236,9 @@ export class PriorityQueue<T> {
     }
 
     public enqueue(element: T, priority: number): void {
+        if (priority > 3 || priority < 1) {
+            return;
+        }
         const newItem = new PriorityNode<T>(element, priority);
         if (this.end) {
             this.end.prev = newItem;
@@ -305,14 +308,16 @@ export class HashTable<T> {
     }
 
     public put(key: any, element: T): void {
-        if (key in this.key) {
-            const index = this.key.indexOf(key);
-            this.value[index] = element;
-        } else {
-            this.key.push(key);
-            this.value.push(element);
-            this._size += 1;
+        for (let i = 0; i < this.key.length; i++) {
+            if (this.key[i] === key) {
+                this.value[i] = element;
+
+                return;
+            }
         }
+        this.key.push(key);
+        this.value.push(element);
+        this._size += 1;
     }
 
     public clear(): void {
