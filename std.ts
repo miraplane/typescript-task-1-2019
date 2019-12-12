@@ -2,7 +2,7 @@
  * Сделано задание на звездочку
  * Реализованы методы LinkedList.prev и LinkedList.next
  */
-export const isStar = false;
+export const isStar = true;
 
 class Node<T> {
     public readonly value: T;
@@ -114,24 +114,75 @@ class List<T> {
 }
 
 export class LinkedList<T> extends List<T> {
+    private link?: Node<T>;
+
     constructor() {
         super();
+        this.link = this.head;
+    }
+
+    public prev(): T | undefined {
+        if (this.link) {
+            const current = this.link.value;
+            if (this.link.prev) {
+                this.link = this.link.prev;
+            }
+
+            return current;
+        }
+
+        return;
+    }
+
+    public next(): T | undefined {
+        if (this.link) {
+            const current = this.link.value;
+            if (this.link.next) {
+                this.link = this.link.next;
+            }
+
+            return current;
+        }
+
+        return;
     }
 
     public push(element: T): void {
         super.push(element);
+        if (this.size === 1) {
+            this.link = this.head;
+        }
     }
 
     public pop(): T | undefined {
-        return super.pop();
+        if (this.link === this.tail) {
+            this.prev();
+        }
+        const popItem = super.pop();
+        if (this.size === 0) {
+            this.link = this.head;
+        }
+
+        return popItem;
     }
 
     public unshift(element: T): void {
         super.unshift(element);
+        if (this.size === 1) {
+            this.link = this.head;
+        }
     }
 
     public shift(): T | undefined {
-        return super.shift();
+        if (this.link === this.head) {
+            this.next();
+        }
+        const shiftItem = super.shift();
+        if (this.size === 0) {
+            this.link = this.head;
+        }
+
+        return shiftItem;
     }
 
     public get(index: number): T | undefined {
