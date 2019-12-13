@@ -112,6 +112,9 @@ describe('std', () => {
 
             newb.push(1);
             assert.equal(newb.size, 0);
+            assert.equal(newb.shift(), undefined);
+            assert.equal(newb.size, 0);
+            assert.equal(newb.capacity, 0);
         });
 
         it('Можно конкатинировать два буффера', () => {
@@ -124,6 +127,121 @@ describe('std', () => {
             assert.equal(newBuffer.size, 5);
             assert.equal(newBuffer.capacity, 7);
             assert.equal(newBuffer.get(0), 4);
+        });
+    });
+
+    describe('ConcatRingBuffer', () => {
+        const firstBuffer = new std.RingBuffer<string>(2);
+        const secondBuffer = new std.RingBuffer<string>(0);
+        const thirdBuffer = new std.RingBuffer<string>(3);
+        const fourthBuffer = new std.RingBuffer<string>(1);
+
+        it('Конкатинация пустых буфферов', () => {
+            const emptyBuffer = std.RingBuffer.concat(
+                firstBuffer,
+                secondBuffer,
+                thirdBuffer,
+                fourthBuffer);
+            assert.equal(emptyBuffer.capacity, 6);
+            assert.equal(emptyBuffer.shift(), undefined);
+            assert.equal(emptyBuffer.size, 0);
+        });
+
+        function checkConcatBuffer<T>(buffer: std.RingBuffer<T>): void {
+            assert.equal(buffer.capacity, 6);
+            assert.equal(buffer.size, 4);
+            assert.equal(buffer.shift(), 'a');
+            assert.equal(buffer.size, 3);
+            assert.equal(buffer.get(0), 'b');
+            assert.equal(buffer.get(1), 'd');
+            assert.equal(buffer.get(2), 'e');
+            assert.equal(buffer.get(3), undefined);
+        }
+
+        it('Конкатинация всех сразу', () => {
+            firstBuffer.push('a');
+            firstBuffer.push('b');
+
+            secondBuffer.push('c');
+
+            thirdBuffer.push('y');
+            thirdBuffer.push('z');
+            thirdBuffer.push('d');
+            thirdBuffer.push('e');
+            thirdBuffer.shift();
+
+            const all = std.RingBuffer.concat(
+                firstBuffer,
+                secondBuffer,
+                thirdBuffer,
+                fourthBuffer);
+            checkConcatBuffer(all);
+
+        });
+
+        it('Последовательная конкатинация', () => {
+            const all = std.RingBuffer.concat(
+                std.RingBuffer.concat(
+                    std.RingBuffer.concat(firstBuffer, secondBuffer),
+                    thirdBuffer
+                ),
+                fourthBuffer
+            );
+            checkConcatBuffer(all);
+        });
+
+        it('Частичная конкатинация', () => {
+            const firstPart = std.RingBuffer.concat(firstBuffer, secondBuffer);
+            assert.equal(firstPart.size, 2);
+            assert.equal(firstPart.capacity, 2);
+
+            const middlePart = std.RingBuffer.concat(secondBuffer, thirdBuffer);
+            assert.equal(middlePart.size, 2);
+            assert.equal(middlePart.capacity, 3);
+
+            const secondPart = std.RingBuffer.concat(thirdBuffer, fourthBuffer);
+            assert.equal(secondPart.size, 2);
+            assert.equal(secondPart.capacity, 4);
+
+            const all = std.RingBuffer.concat(
+                firstPart,
+                secondPart
+            );
+            checkConcatBuffer(all);
+        });
+
+        it('Проверка целостности после конкатинации', () => {
+            assert.equal(firstBuffer.size, 2);
+            assert.equal(firstBuffer.get(0), 'a');
+            assert.equal(fourthBuffer.get(2), undefined);
+            assert.equal(secondBuffer.size, 0);
+            assert.equal(thirdBuffer.size, 2);
+            assert.equal(thirdBuffer.get(1), 'e');
+            assert.equal(fourthBuffer.size, 0);
+        });
+
+        it('Конкатинация заполненных буфферов', () => {
+            thirdBuffer.push('f');
+            fourthBuffer.push('g');
+
+            const fullBuffer = std.RingBuffer.concat(
+                firstBuffer,
+                secondBuffer,
+                thirdBuffer,
+                fourthBuffer);
+            assert.equal(fullBuffer.capacity, 6);
+            assert.equal(fullBuffer.size, 6);
+            assert.equal(fullBuffer.get(0), 'a');
+            assert.equal(fullBuffer.get(5), 'g');
+            assert.equal(fullBuffer.get(6), undefined);
+            fullBuffer.push('c');
+            assert.equal(fullBuffer.get(0), 'b');
+            assert.equal(fullBuffer.get(5), 'c');
+            assert.equal(fullBuffer.size, 6);
+
+            assert.equal(fullBuffer.shift(), 'b');
+            assert.equal(fullBuffer.size, 5);
+            assert.equal(fullBuffer.get(5), undefined);
         });
     });
 
