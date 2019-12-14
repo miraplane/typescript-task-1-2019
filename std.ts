@@ -39,6 +39,7 @@ class List<T> {
         }
         this._size += 1;
     }
+
     protected shift(): T | undefined {
         const head = this.head;
         if (!head) {
@@ -47,6 +48,7 @@ class List<T> {
         const next = head.next;
         if (next) {
             next.prev = undefined;
+            head.next = undefined;
             this.head = next;
         } else {
             this.head = this.tail = undefined;
@@ -78,6 +80,7 @@ class List<T> {
         const prev = tail.prev;
         if (prev) {
             prev.next = undefined;
+            tail.prev = undefined;
             this.tail = prev;
         } else {
             this.head = this.tail = undefined;
