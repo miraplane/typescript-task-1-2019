@@ -195,10 +195,13 @@ export class RingBuffer<T> extends List<T> {
     }
 
     public push(element: T): void {
-        super.push(element);
-        if (this.size > this._capacity) {
+        if (this._capacity < 1) {
+            return;
+        }
+        if (this.size === this._capacity) {
             super.shift();
         }
+        super.push(element);
     }
 
     public shift(): T | undefined {

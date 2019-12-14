@@ -135,8 +135,9 @@ describe('std', () => {
         const secondBuffer = new std.RingBuffer<string>(0);
         const thirdBuffer = new std.RingBuffer<string>(3);
         const fourthBuffer = new std.RingBuffer<string>(1);
+        const negativBuffer = new std.RingBuffer<string>(-2);
 
-        it('Конкатинация пустых буфферов', () => {
+        it('Конкатенация пустых буфферов', () => {
             const emptyBuffer = std.RingBuffer.concat(
                 firstBuffer,
                 secondBuffer,
@@ -158,7 +159,7 @@ describe('std', () => {
             assert.equal(buffer.get(3), undefined);
         }
 
-        it('Конкатинация всех сразу', () => {
+        it('Конкатенация всех сразу', () => {
             firstBuffer.push('a');
             firstBuffer.push('b');
 
@@ -179,7 +180,14 @@ describe('std', () => {
 
         });
 
-        it('Последовательная конкатинация', () => {
+        it('Буффер с отрицательной вместимостью', () => {
+            const merge = std.RingBuffer.concat(thirdBuffer, negativBuffer);
+            assert.equal(merge.size, 1);
+            assert.equal(merge.capacity, 1);
+            assert.equal(merge.get(0), 'e');
+        });
+
+        it('Последовательная конкатенация', () => {
             const all = std.RingBuffer.concat(
                 std.RingBuffer.concat(
                     std.RingBuffer.concat(firstBuffer, secondBuffer),
@@ -190,7 +198,7 @@ describe('std', () => {
             checkConcatBuffer(all);
         });
 
-        it('Частичная конкатинация', () => {
+        it('Частичная конкатенация', () => {
             const firstPart = std.RingBuffer.concat(firstBuffer, secondBuffer);
             assert.equal(firstPart.size, 2);
             assert.equal(firstPart.capacity, 2);
@@ -210,7 +218,7 @@ describe('std', () => {
             checkConcatBuffer(all);
         });
 
-        it('Проверка целостности после конкатинации', () => {
+        it('Проверка целостности после конкатенации', () => {
             assert.equal(firstBuffer.size, 2);
             assert.equal(firstBuffer.get(0), 'a');
             assert.equal(fourthBuffer.get(2), undefined);
@@ -220,7 +228,7 @@ describe('std', () => {
             assert.equal(fourthBuffer.size, 0);
         });
 
-        it('Конкатинация заполненных буфферов', () => {
+        it('Конкатенация заполненных буфферов', () => {
             thirdBuffer.push('f');
             fourthBuffer.push('g');
 
