@@ -18,14 +18,19 @@ class Node<T> {
 class List<T> {
     protected head?: Node<T>;
     protected tail?: Node<T>;
-    protected _size: number;
-    public get size(): number {
-        return this._size;
-    }
 
+    public get size(): number {
+        let count = 0;
+        let head = this.head;
+        while (head) {
+            count += 1;
+            head = head.next;
+        }
+
+        return count;
+    }
     constructor() {
         this.head = this.tail = undefined;
-        this._size = 0;
     }
 
     protected push(element: T): void {
@@ -37,7 +42,6 @@ class List<T> {
         } else {
             this.head = this.tail = newItem;
         }
-        this._size += 1;
     }
 
     protected shift(): T | undefined {
@@ -53,13 +57,12 @@ class List<T> {
         } else {
             this.head = this.tail = undefined;
         }
-        this._size -= 1;
 
         return head.value;
     }
 
     protected get(index: number): T | undefined {
-        if (index < 0 || index >= this._size) {
+        if (index < 0 || index >= this.size) {
             return;
         }
         let count = 0;
@@ -85,7 +88,6 @@ class List<T> {
         } else {
             this.head = this.tail = undefined;
         }
-        this._size -= 1;
 
         return tail.value;
     }
@@ -99,7 +101,6 @@ class List<T> {
         } else {
             this.head = this.tail = newItem;
         }
-        this._size += 1;
     }
 }
 
