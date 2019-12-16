@@ -70,6 +70,7 @@ describe('std', () => {
     describe('RingBuffer', () => {
         const rb = new (std.RingBuffer as any)(3);
         const newRb = new (std.RingBuffer as any)(4);
+        const boolRb = new std.RingBuffer<boolean>(1);
 
         it('Можно добавлять элементы', () => {
             assert.equal(rb.size, 0);
@@ -117,6 +118,14 @@ describe('std', () => {
             assert.equal(newb.capacity, 0);
         });
 
+        it('Значение меняется и size не растет', () => {
+            boolRb.push(false);
+            boolRb.push(true);
+
+            assert.equal(boolRb.size, 1);
+            assert.equal(boolRb.get(0), true);
+        });
+
         it('Можно конкатинировать два буффера', () => {
             newRb.push(12);
             newRb.push(23);
@@ -135,7 +144,7 @@ describe('std', () => {
         const secondBuffer = new std.RingBuffer<string>(0);
         const thirdBuffer = new std.RingBuffer<string>(3);
         const fourthBuffer = new std.RingBuffer<string>(1);
-        const negativBuffer = new std.RingBuffer<string>(-2);
+        const negativeBuffer = new std.RingBuffer<string>(-2);
 
         it('Конкатенация пустых буфферов', () => {
             const emptyBuffer = std.RingBuffer.concat(
@@ -181,7 +190,7 @@ describe('std', () => {
         });
 
         it('Буффер с отрицательной вместимостью', () => {
-            const merge = std.RingBuffer.concat(thirdBuffer, negativBuffer);
+            const merge = std.RingBuffer.concat(thirdBuffer, negativeBuffer);
             assert.equal(merge.size, 1);
             assert.equal(merge.capacity, 1);
             assert.equal(merge.get(0), 'e');
@@ -251,6 +260,24 @@ describe('std', () => {
             assert.equal(fullBuffer.size, 5);
             assert.equal(fullBuffer.get(5), undefined);
         });
+    });
+
+    describe('Boolean RingBuffers concat', () => {
+        const firstBuffer = new std.RingBuffer<boolean>(2);
+        const secondBuffer = new std.RingBuffer<boolean>(1);
+
+        it('Можно конкатенировать два буффера', () => {
+            firstBuffer.push(true);
+            firstBuffer.push(false);
+            secondBuffer.push(true);
+
+            const all = std.RingBuffer.concat(firstBuffer, secondBuffer);
+            assert.equal(all.size, 3);
+            assert.equal(all.get(0), true);
+            assert.equal(all.get(1), false);
+            assert.equal(all.get(2), true);
+        });
+
     });
 
     describe('Queue', () => {
