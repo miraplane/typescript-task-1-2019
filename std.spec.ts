@@ -349,7 +349,7 @@ describe('std', () => {
             assert.equal(pq.dequeue(), undefined);
         });
 
-        it('лементы удаляются правильно', () => {
+        it('Элементы удаляются правильно', () => {
             pq.enqueue('8', 2);
             pq.enqueue('4', 3);
             pq.enqueue('6', 2);

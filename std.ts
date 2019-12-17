@@ -11,7 +11,6 @@ class Node<T> {
 
     constructor(value: T) {
         this.value = value;
-        this.prev = this.next = undefined;
     }
 }
 
@@ -25,7 +24,6 @@ class List<T> {
     }
 
     constructor() {
-        this.head = this.tail = undefined;
         this._size = 0;
     }
 
@@ -38,6 +36,7 @@ class List<T> {
         } else {
             this.head = this.tail = newItem;
         }
+
         this._size += 1;
     }
 
@@ -103,6 +102,7 @@ class List<T> {
         } else {
             this.head = this.tail = newItem;
         }
+
         this._size += 1;
     }
 }
@@ -291,22 +291,27 @@ export class PriorityQueue<T> {
             return;
         }
 
-        if (priority === Priority.First) {
-            this.first.enqueue(element);
-        } else if (priority === Priority.Second) {
-            this.second.enqueue(element);
-        } else {
-            this.third.enqueue(element);
+        switch (priority) {
+            case Priority.First:
+                this.first.enqueue(element);
+                break;
+            case Priority.Second:
+                this.second.enqueue(element);
+                break;
+            case Priority.Third:
+                this.third.enqueue(element);
+                break;
+            default:
+                break;
         }
     }
 
     public dequeue(): T | undefined {
-        if (this.third.size > 0) {
-            return this.third.dequeue();
-        } else if (this.second.size > 0) {
-            return this.second.dequeue();
-        } else if (this.first.size > 0) {
-            return this.first.dequeue();
+        const queueWithMaxPriority = [this.third, this.second, this.first]
+            .filter(queue => queue.size > 0)[0];
+
+        if (queueWithMaxPriority) {
+            return queueWithMaxPriority.dequeue();
         }
 
         return;
@@ -332,6 +337,7 @@ export class HashTable {
                 return;
             }
         }
+
         this.data.push([key, element]);
     }
 
