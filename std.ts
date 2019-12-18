@@ -54,6 +54,7 @@ class List<T> {
         } else {
             this.head = this.tail = undefined;
         }
+
         this._size -= 1;
 
         return head.value;
@@ -88,6 +89,7 @@ class List<T> {
         } else {
             this.head = this.tail = undefined;
         }
+
         this._size -= 1;
 
         return tail.value;
@@ -115,11 +117,24 @@ export class LinkedList<T> extends List<T> {
         this.link = this.head;
     }
 
-    public prev(): T | undefined {
+    private move(direction: string): T | undefined {
         if (this.link) {
             const current = this.link.value;
-            if (this.link.prev) {
-                this.link = this.link.prev;
+
+            let movedLink;
+            switch (direction) {
+                case 'prev':
+                    movedLink = this.link.prev;
+                    break;
+                case 'next':
+                    movedLink = this.link.next;
+                    break;
+                default:
+                    break;
+            }
+
+            if (movedLink) {
+                this.link = movedLink;
             }
 
             return current;
@@ -128,17 +143,12 @@ export class LinkedList<T> extends List<T> {
         return;
     }
 
+    public prev(): T | undefined {
+        return this.move('prev');
+    }
+
     public next(): T | undefined {
-        if (this.link) {
-            const current = this.link.value;
-            if (this.link.next) {
-                this.link = this.link.next;
-            }
-
-            return current;
-        }
-
-        return;
+        return this.move('next');
     }
 
     public push(element: T): void {
