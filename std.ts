@@ -117,21 +117,10 @@ export class LinkedList<T> extends List<T> {
         this.link = this.head;
     }
 
-    private move(direction: string): T | undefined {
+    private move(direction: 'prev' | 'next'): T | undefined {
         if (this.link) {
             const current = this.link.value;
-
-            let movedLink;
-            switch (direction) {
-                case 'prev':
-                    movedLink = this.link.prev;
-                    break;
-                case 'next':
-                    movedLink = this.link.next;
-                    break;
-                default:
-                    break;
-            }
+            const movedLink = this.link[direction];
 
             if (movedLink) {
                 this.link = movedLink;
